@@ -1,6 +1,4 @@
 const header = document.querySelector(".site-header");
-const year = document.querySelector("#year");
-if (year) year.textContent = String(new Date().getFullYear());
 const updateHeader = () => header?.classList.toggle("is-scrolled", window.scrollY > 12);
 updateHeader();
 window.addEventListener("scroll", updateHeader, { passive: true });
@@ -57,7 +55,7 @@ if (canvas) {
     const warmSprite = makeSprite(232, 226, 255);
     const pulseSprite = makeSprite(170, 236, 230);
     const violetSprite = makeSprite(196, 184, 245);
-    const stars = Array.from({ length: 170 }, (_, i) => ({
+    const stars = Array.from({ length: 240 }, (_, i) => ({
       nx: hash(i + 1),
       ny: hash(i + 80),
       depth: hash(i + 160),
@@ -91,7 +89,7 @@ if (canvas) {
           span: 28 + hash(index * 9 + p + 8) * 26,
           violet: (index + p) % 3 === 0
         }));
-        return { pts, cum, total, pulses, alpha: 0.07 + hash(index + 11) * 0.06 };
+        return { pts, cum, total, pulses, alpha: 0.22 + hash(index + 11) * 0.16 };
       });
     };
 
@@ -120,7 +118,7 @@ if (canvas) {
 
     const strokeHot = (route, head, span, violet) => {
       const steps = 8;
-      ctx.lineWidth = 1.35;
+      ctx.lineWidth = 1.8;
       for (let i = steps; i >= 1; i -= 1) {
         const from = pointAt(route, head - (span * i) / steps);
         const to = pointAt(route, head - (span * (i - 1)) / steps);
@@ -137,7 +135,7 @@ if (canvas) {
     };
 
     const drawStars = (now, dt, motion) => {
-      const count = width < 700 ? 80 : 150;
+      const count = width < 700 ? 120 : 220;
       for (let i = 0; i < count; i += 1) {
         const star = stars[i];
         if (motion) {
@@ -150,8 +148,8 @@ if (canvas) {
         }
         const wave = 0.5 + 0.5 * Math.sin(now * 0.001 * star.twinkle + star.phase);
         const sharp = star.depth > 0.9 ? wave ** 3 : wave;
-        const alpha = 0.18 + sharp * (0.35 + star.depth * 0.5);
-        const size = 2.2 + star.depth * 7.5;
+        const alpha = 0.4 + sharp * (0.45 + star.depth * 0.5);
+        const size = 2.8 + star.depth * 11;
         ctx.globalAlpha = alpha;
         ctx.drawImage(
           star.violet ? warmSprite : starSprite,
@@ -171,8 +169,8 @@ if (canvas) {
         ctx.beginPath();
         ctx.moveTo(route.pts[0].x, route.pts[0].y);
         for (let i = 1; i < route.pts.length; i += 1) ctx.lineTo(route.pts[i].x, route.pts[i].y);
-        ctx.strokeStyle = `rgba(148, 214, 222, ${route.alpha.toFixed(3)})`;
-        ctx.lineWidth = 1;
+        ctx.strokeStyle = `rgba(160, 226, 232, ${route.alpha.toFixed(3)})`;
+        ctx.lineWidth = 1.25;
         ctx.stroke();
         ctx.fillStyle = "rgba(176, 226, 232, 0.4)";
         for (const pt of route.pts) ctx.fillRect(pt.x - 1.15, pt.y - 1.15, 2.3, 2.3);
@@ -183,8 +181,8 @@ if (canvas) {
           const head = motion ? elapsed * pulse.speed + pulse.offset : pulse.offset;
           strokeHot(route, head, pulse.span, pulse.violet);
           const tip = pointAt(route, head);
-          const glow = 7;
-          ctx.globalAlpha = 0.9;
+          const glow = 12;
+          ctx.globalAlpha = 1;
           ctx.drawImage(pulse.violet ? violetSprite : pulseSprite, tip.x - glow, tip.y - glow, glow * 2, glow * 2);
           ctx.globalAlpha = 1;
         }
